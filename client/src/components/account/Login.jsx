@@ -63,12 +63,18 @@ const signupInitialValues = {
   password: "",
 };
 
+const loginInitialValues = {
+  username: "",
+  password: "",
+};
+
 const Login = () => {
   const imageURL =
     "https://www.sesta.it/wp-content/uploads/2021/03/logo-blog-sesta-trasparente.png";
 
   const [account, toggleAccount] = useState("login");
   const [signup, setSignup] = useState(signupInitialValues);
+  const [login, setLogin] = useState(loginInitialValues);
   const [error, setError] = useState("");
 
   const toggleSignup = () => {
@@ -92,6 +98,27 @@ const Login = () => {
     }
   };
 
+  const onValueChange = (e) => {
+    setLogin({ ...login, [e.target.name]: e.target.value });
+  };
+
+  const loginUser = async () => {
+    let response = await API.userLogin(login);
+
+    if (response.isSuccess) {
+      setError("");
+      sessionStorage.setItem(
+        "accessToken",
+        `Bearer ${response.data.accessToken}`
+      );
+      sessionStorage.setItem(
+        "refreshToken",
+        `Bearer ${response.data.refreshToken}`
+      );
+    } else {
+      setError("Something went wrong! Please try again later");
+    }
+  };
   return (
     <Component>
       <Box>
@@ -99,10 +126,25 @@ const Login = () => {
 
         {account == "login" ? (
           <Wrapper>
-            <TextField variant="standard" label="Enter username" />
-            <TextField variant="standard" label="Enter password" />
+            <TextField
+              variant="standard"
+              value={login.username}
+              onChange={(e) => onValueChange(e)}
+              name="username"
+              label="Enter username"
+            />
+            <TextField
+              variant="standard"
+              value={login.password}
+              onChange={(e) => onValueChange(e)}
+              name="password"
+              label="Enter password"
+            />
+
             {error && <Error>{error}</Error>}
-            <LoginButton variant="contained">Login</LoginButton>
+            <LoginButton variant="contained" onClick={() => loginUser()}>
+              Login
+            </LoginButton>
             <Text style={{ textAlign: "center" }}>OR</Text>
             <SignupButton onClick={() => toggleSignup()}>
               Create an account
