@@ -1,5 +1,6 @@
 import { Box, TextField, Button, styled, Typography } from "@mui/material";
 import { useState } from "react";
+import { API } from "../../service/api";
 
 const Component = styled(Box)`
   width: 400px;
@@ -48,6 +49,14 @@ const Text = styled(Typography)`
   font-size: 16px;
 `;
 
+const Error = styled(Typography)`
+  font-size: 10px;
+  color: #ff6161;
+  line-height: 0;
+  margin-top: 10px;
+  font-weight: 600;
+`;
+
 const signupInitialValues = {
   name: "",
   username: "",
@@ -60,6 +69,7 @@ const Login = () => {
 
   const [account, toggleAccount] = useState("login");
   const [signup, setSignup] = useState(signupInitialValues);
+  const [error, setError] = useState("");
 
   const toggleSignup = () => {
     account === "login" ? toggleAccount("signup") : toggleAccount("login");
@@ -68,6 +78,18 @@ const Login = () => {
   const onInputChange = (e) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
     // console.log(signup);
+  };
+
+  const signupUser = async () => {
+    let response = await API.userSignup(signup);
+
+    if (response.isSuccess) {
+      setError("");
+      setSignup(signupInitialValues);
+      toggleAccount("login");
+    } else {
+      setError("Something went wrong! Please try again later");
+    }
   };
 
   return (
@@ -79,6 +101,7 @@ const Login = () => {
           <Wrapper>
             <TextField variant="standard" label="Enter username" />
             <TextField variant="standard" label="Enter password" />
+            {error && <Error>{error}</Error>}
             <LoginButton variant="contained">Login</LoginButton>
             <Text style={{ textAlign: "center" }}>OR</Text>
             <SignupButton onClick={() => toggleSignup()}>
@@ -106,7 +129,9 @@ const Login = () => {
               label="Enter Password"
             />
 
-            <SignupButton>Signup</SignupButton>
+            {error && <Error>{error}</Error>}
+
+            <SignupButton onClick={signupUser}>Signup</SignupButton>
             <Text style={{ textAlign: "center" }}>OR</Text>
             <LoginButton onClick={() => toggleSignup()} variant="contained">
               Already have an account
