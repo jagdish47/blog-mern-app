@@ -11,6 +11,7 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
+import CreatePost from "./create/CreatePost";
 
 const PrivateRoute = ({ isAuthenticated, ...props }) => {
   return isAuthenticated ? (
@@ -36,6 +37,13 @@ function App() {
               element={<PrivateRoute isAuthenticated={isUserAuthentication} />}
             >
               <Route path="/" element={<Home />} />
+            </Route>
+
+            <Route
+              path="/create"
+              element={<PrivateRoute isAuthenticated={isUserAuthentication} />}
+            >
+              <Route path="/create" element={<CreatePost />} />
             </Route>
 
             <Route
